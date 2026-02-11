@@ -15,11 +15,17 @@
         "usps"
     ],
     "license": "Apache-2.0",
-    "name": "@mediocre/usps",
-    "repository": "https://github.com/mediocre/usps",
+    "name": "@stores.com/usps",
+    "publishConfig": {
+        "access": "public"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/stores-com/usps.git"
+    },
     "scripts": {
-        "coveralls": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
-        "test": "node --test test/"
+        "coveralls": "node --test --test-concurrency=true --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=lcov.info && coveralls < lcov.info",
+        "test": "node --test --test-concurrency=true --test-reporter=spec"
     },
     "version": "0.1.0"
 }
