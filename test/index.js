@@ -1,64 +1,68 @@
 const assert = require('node:assert');
-const { test, describe, beforeEach, after } = require('node:test');
+const test = require('node:test');
 
 const cache = require('memory-cache');
 
 const USPS = require('../index');
 
-beforeEach(() => {
-    cache.clear();
-});
-
-after(() => {
-    cache.clear();
-});
-
- describe('getAccessToken', () => {
-     test('should return an error for invalid environment_url', async () => {
-         const usps = new USPS({
-             environment_url: 'invalid'
-         });
-
-         await assert.rejects(usps.getAccessToken(), { message: 'Failed to parse URL from invalid/oauth2/v3/token' });
-     });
-
-     test('should return an error for non 200 status code', async () => {
-         const usps = new USPS({
-             environment_url: 'https://httpbin.org/status/500#'
-         });
-
-         await assert.rejects(usps.getAccessToken(), { message: 'Internal Server Error', status: 500 });
+test('getAccessToken', { concurrency: true }, async (t) => {
+    t.after(() => {
+        cache.clear();
     });
 
-     test('should return a valid access token', async () => {
-         const usps = new USPS({
-             client_id: process.env.CLIENT_ID,
-             client_secret: process.env.CLIENT_SECRET
-         });
+    t.test('should return an error for invalid environment_url', async () => {
+        const usps = new USPS({
+            environment_url: 'invalid'
+        });
 
-         const accessToken = await usps.getAccessToken();
+        await assert.rejects(usps.getAccessToken(), { message: 'Failed to parse URL from invalid/oauth2/v3/token' });
+    });
 
-         assert(accessToken);
-         assert(accessToken.access_token);
-         assert(accessToken.expires_in);
-         assert.strictEqual(accessToken.token_type, 'Bearer');
-     });
+    t.test('should return an error for non 200 status code', async () => {
+        const usps = new USPS({
+            environment_url: 'https://httpbin.org/status/500#'
+        });
 
-     test('should return the same access token on subsequent calls', async () => {
-         const usps = new USPS({
-             client_id: process.env.CLIENT_ID,
-             client_secret: process.env.CLIENT_SECRET
-         });
+        await assert.rejects(usps.getAccessToken(), (err) => {
+            assert.strictEqual(err.name, 'HttpError');
+            assert.match(err.message, /^500/);
+            return true;
+        });
+    });
 
-         const accessToken1 = await usps.getAccessToken();
-         const accessToken2 = await usps.getAccessToken();
+    t.test('should return a valid access token', async () => {
+        const usps = new USPS({
+            client_id: process.env.CLIENT_ID,
+            client_secret: process.env.CLIENT_SECRET
+        });
 
-         assert.deepStrictEqual(accessToken2, accessToken1);
-     });
- });
+        const accessToken = await usps.getAccessToken();
 
-describe('getTracking', () => {
-    test('should return tracking data for tracking number', async () => {
+        assert(accessToken);
+        assert(accessToken.access_token);
+        assert(accessToken.expires_in);
+        assert.strictEqual(accessToken.token_type, 'Bearer');
+    });
+
+    t.test('should return the same access token on subsequent calls', async () => {
+        const usps = new USPS({
+            client_id: process.env.CLIENT_ID,
+            client_secret: process.env.CLIENT_SECRET
+        });
+
+        const accessToken1 = await usps.getAccessToken();
+        const accessToken2 = await usps.getAccessToken();
+
+        assert.deepStrictEqual(accessToken2, accessToken1);
+    });
+});
+
+test('getTracking', { concurrency: true }, async (t) => {
+    t.after(() => {
+        cache.clear();
+    });
+
+    t.test('should return tracking data for tracking number', async () => {
         const usps = new USPS({
             client_id: process.env.CLIENT_ID,
             client_secret: process.env.CLIENT_SECRET
@@ -71,7 +75,7 @@ describe('getTracking', () => {
         assert(Array.isArray(tracking) || tracking.trackingNumber);
     });
 
-    test('should handle error for blank tracking number', async () => {
+    t.test('should handle error for blank tracking number', async () => {
         const usps = new USPS({
             client_id: process.env.CLIENT_ID,
             client_secret: process.env.CLIENT_SECRET

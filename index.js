@@ -1,16 +1,18 @@
 const cache = require('memory-cache');
-const createError = require('http-errors');
+
+const HttpError = require('./http-error');
 
 function USPS(args) {
-    const options = Object.assign({
-        environment_url: 'https://apis-tem.usps.com'
-    }, args);
+    const options = {
+        environment_url: 'https://apis-tem.usps.com',
+        ...args
+    };
 
     /**
      * OAuth access tokens are used to grant authorized access to USPS® APIs. Access tokens will expire, requiring applications to periodically check the expiration time and get new tokens.
      * @see https://developers.usps.com/Oauth
      */
-    this.getAccessToken = async () => {
+    this.getAccessToken = async (_options = {}) => {
         const url = `${options.environment_url}/oauth2/v3/token`;
         const key = `usps:oauth:${options.client_id}`;
 
@@ -28,17 +30,16 @@ function USPS(args) {
         });
 
         const res = await fetch(url, {
-            method: 'POST',
+            body: formData,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: formData
+            method: 'POST',
+            signal: AbortSignal.timeout(_options.timeout || 30000)
         });
 
         if (!res.ok) {
-            const err = createError(res.status);
-            err.response = await res.json().catch(() => ({}));
-            throw err;
+            throw await HttpError.from(res);
         }
 
         const json = await res.json();
@@ -61,18 +62,17 @@ function USPS(args) {
         }];
 
         const res = await fetch(`${options.environment_url}/tracking/v3r2/tracking`, {
-            method: 'POST',
+            body: JSON.stringify(requestBody),
             headers: {
                 'Authorization': `Bearer ${tokenData.access_token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(requestBody)
+            method: 'POST',
+            signal: AbortSignal.timeout(_options.timeout || 30000)
         });
 
         if (!res.ok) {
-            const err = createError(res.status);
-            err.response = await res.json().catch(() => ({}));
-            throw err;
+            throw await HttpError.from(res);
         }
 
         return await res.json();
