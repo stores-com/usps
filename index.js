@@ -53,9 +53,9 @@ function USPS(args) {
      * @see https://developers.usps.com/trackingv3
      */
     this.getTracking = async (trackingNumber, _options = {}) => {
-        const tokenData = await this.getAccessToken();
+        const accessToken = await this.getAccessToken();
 
-        const requestBody = [{
+        const body = [{
             trackingNumber: `${trackingNumber}`,
             ...(_options.destinationZIPCode && { destinationZIPCode: _options.destinationZIPCode }),
             ...(_options.expand && { expand: _options.expand }),
@@ -63,9 +63,9 @@ function USPS(args) {
         }];
 
         const res = await fetch(`${options.environment_url}/tracking/v3r2/tracking`, {
-            body: JSON.stringify(requestBody),
+            body: JSON.stringify(body),
             headers: {
-                Authorization: `Bearer ${tokenData.access_token}`,
+                Authorization: `Bearer ${accessToken.access_token}`,
                 'Content-Type': 'application/json'
             },
             method: 'POST',
