@@ -16,7 +16,6 @@ function USPS(args) {
         const url = `${options.environment_url}/oauth2/v3/token`;
         const key = `usps:oauth:${options.client_id}`;
 
-        // Try to get the access token from memory cache
         const accessToken = cache.get(key);
 
         if (accessToken) {
@@ -44,27 +43,29 @@ function USPS(args) {
 
         const json = await res.json();
 
-        // Put the access token in memory cache
         cache.put(key, json, Number(json.expires_in) * 1000 / 2);
 
         return json;
     };
 
-
+    /**
+     * This API allows users to retrieve either a summary or detailed information about a specific USPS® package.
+     * @see https://developers.usps.com/trackingv3
+     */
     this.getTracking = async (trackingNumber, _options = {}) => {
         const tokenData = await this.getAccessToken();
 
-        // Build request body according to API spec
         const requestBody = [{
             trackingNumber: `${trackingNumber}`,
-            ...(_options.mailingDate && { mailingDate: _options.mailingDate }),
-            ...(_options.destinationZIPCode && { destinationZIPCode: _options.destinationZIPCode })
+            ...(_options.destinationZIPCode && { destinationZIPCode: _options.destinationZIPCode }),
+            ...(_options.expand && { expand: _options.expand }),
+            ...(_options.mailingDate && { mailingDate: _options.mailingDate })
         }];
 
         const res = await fetch(`${options.environment_url}/tracking/v3r2/tracking`, {
             body: JSON.stringify(requestBody),
             headers: {
-                'Authorization': `Bearer ${tokenData.access_token}`,
+                Authorization: `Bearer ${tokenData.access_token}`,
                 'Content-Type': 'application/json'
             },
             method: 'POST',
