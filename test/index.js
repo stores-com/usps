@@ -1,15 +1,9 @@
 const assert = require('node:assert');
 const test = require('node:test');
 
-const cache = require('memory-cache');
-
 const USPS = require('../index');
 
 test('getAccessToken', { concurrency: true }, async (t) => {
-    t.after(() => {
-        cache.clear();
-    });
-
     t.test('should return an error for invalid environment_url', async () => {
         const usps = new USPS({
             environment_url: 'invalid'
@@ -58,10 +52,6 @@ test('getAccessToken', { concurrency: true }, async (t) => {
 });
 
 test('getTracking', { concurrency: true }, async (t) => {
-    t.after(() => {
-        cache.clear();
-    });
-
     t.test('should return tracking data for tracking number', async () => {
         const usps = new USPS({
             client_id: process.env.CLIENT_ID,
