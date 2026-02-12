@@ -78,19 +78,6 @@ test('getTracking', { concurrency: true }, async (t) => {
         assert(tracking);
     });
 
-    t.test('should support expand option', async () => {
-        const usps = new USPS({
-            client_id: process.env.CLIENT_ID,
-            client_secret: process.env.CLIENT_SECRET
-        });
-
-        const tracking = await usps.getTracking('9434650899562092878282', {
-            expand: 'DETAIL'
-        });
-
-        assert(tracking);
-    });
-
     t.test('should support mailingDate option', async () => {
         const usps = new USPS({
             client_id: process.env.CLIENT_ID,

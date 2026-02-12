@@ -61,13 +61,7 @@ function USPS(args) {
             ...(_options.mailingDate && { mailingDate: _options.mailingDate })
         }];
 
-        const query = new URLSearchParams();
-
-        if (_options.expand) {
-            query.set('expand', _options.expand);
-        }
-
-        const res = await fetch(`${options.environment_url}/tracking/v3r2/tracking?${query.toString()}`, {
+        const res = await fetch(`${options.environment_url}/tracking/v3r2/tracking`, {
             body: JSON.stringify(body),
             headers: {
                 Authorization: `Bearer ${accessToken.access_token}`,

@@ -69,11 +69,10 @@ console.log(tracking);
 | Name | Description |
 | --- | --- |
 | `destinationZIPCode` | Destination ZIP Code |
-| `expand` | `SUMMARY` or `DETAIL` |
 | `mailingDate` | Mailing date (e.g. `2026-01-01`) |
 
 ```javascript
 const tracking = await usps.getTracking('9434650899562092878282', {
-    expand: 'DETAIL'
+    destinationZIPCode: '20500'
 });
 ```
