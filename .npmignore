@@ -1,3 +1,5 @@
-coverage
+.claude
+.github
+CLAUDE.md
 eslint.config.js
 test

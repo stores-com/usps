@@ -1,6 +1,6 @@
 const cache = require('memory-cache');
 
-const HttpError = require('./http-error');
+const HttpError = require('@stores.com/http-error');
 
 function USPS(args) {
     const options = {

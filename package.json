@@ -1,5 +1,6 @@
 {
     "dependencies": {
+        "@stores.com/http-error": "~1.0.0",
         "memory-cache": "~0.2.0"
     },
     "description": "USPS API client for tracking packages using OAuth 2.0 authentication",
