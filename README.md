@@ -50,7 +50,7 @@ console.log(accessToken);
 
 This API allows users to retrieve either a summary or detailed information about a specific USPS® package.
 
-See: https://developers.usps.com/trackingv3
+See: https://developers.usps.com/trackingv3r2
 
 ```javascript
 const tracking = await usps.getTracking('9434650899562092878282');

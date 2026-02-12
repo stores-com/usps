@@ -50,7 +50,7 @@ function USPS(args) {
 
     /**
      * This API allows users to retrieve either a summary or detailed information about a specific USPS® package.
-     * @see https://developers.usps.com/trackingv3
+     * @see https://developers.usps.com/trackingv3r2
      */
     this.getTracking = async (trackingNumber, _options = {}) => {
         const accessToken = await this.getAccessToken();
