@@ -1,6 +1,8 @@
 const assert = require('node:assert');
 const test = require('node:test');
 
+const nock = require('nock');
+
 const USPS = require('../index');
 
 test('getAccessToken', { concurrency: true }, async (t) => {
@@ -63,6 +65,36 @@ test('getTracking', { concurrency: true }, async (t) => {
         assert(tracking);
         // Response should be an array since request was an array
         assert(Array.isArray(tracking) || tracking.trackingNumber);
+    });
+
+    t.test('should pass optional parameters in request body', async () => {
+        const scope = nock('https://apis-tem.usps.com')
+            .post('/oauth2/v3/token')
+            .reply(200, { access_token: 'test', expires_in: 3600, token_type: 'Bearer' })
+            .post('/tracking/v3r2/tracking', (body) => {
+                assert.deepStrictEqual(body, [{
+                    trackingNumber: '9434650899562092878282',
+                    destinationZIPCode: '20500',
+                    expand: 'DETAIL',
+                    mailingDate: '2026-01-01'
+                }]);
+
+                return true;
+            })
+            .reply(200, {});
+
+        const usps = new USPS({
+            client_id: 'test',
+            client_secret: 'test'
+        });
+
+        await usps.getTracking('9434650899562092878282', {
+            destinationZIPCode: '20500',
+            expand: 'DETAIL',
+            mailingDate: '2026-01-01'
+        });
+
+        scope.done();
     });
 
     t.test('should handle error for blank tracking number', async () => {
