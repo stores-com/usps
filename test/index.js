@@ -20,7 +20,7 @@ test('getAccessToken', { concurrency: true }, async (t) => {
 
     t.test('should return an error for non 200 status code', async () => {
         const usps = new USPS({
-            environment_url: 'https://httpstat.us/500#'
+            environment_url: 'https://httpbin.org/status/500#'
         });
 
         await assert.rejects(usps.getAccessToken(), (err) => {
