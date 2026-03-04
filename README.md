@@ -1,7 +1,7 @@
 # usps
 
 [![Test](https://github.com/stores-com/usps/actions/workflows/test.yml/badge.svg)](https://github.com/stores-com/usps/actions/workflows/test.yml)
-[![Coverage Status](https://coveralls.io/repos/github/stores-com/usps/badge.svg)](https://coveralls.io/github/stores-com/usps)
+[![Coverage Status](https://coveralls.io/repos/github/stores-com/usps/badge.svg?branch=main)](https://coveralls.io/github/stores-com/usps?branch=main)
 [![npm version](https://img.shields.io/npm/v/@stores.com/usps)](https://www.npmjs.com/package/@stores.com/usps)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
